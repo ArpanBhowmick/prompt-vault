@@ -12,19 +12,22 @@ Once Phase 1 is completed, this document should be treated as a historical recor
 
 ```text
 prompt-vault/
-├── frontend/             # React frontend application
-├── backend/              # Node.js/Express backend API
-├── prisma/               # Prisma schema and database configuration
+├── client/                       # React frontend application
+├── server/                       # Node.js/Express backend API
+│   └── prisma/                   # Prisma schema and database configuration
 ├── docs/
-│   ├── prd/
+│   ├── prompt-vault-prd.md
+│   ├── prd docs/
 │   │   └── phase-1-mvp.md
-│   └── architecture/
-│       └── phase-1-mvp.md
-├── AGENTS.md             # Instructions and rules for AI coding agents
-└── README.md             # Project overview and setup instructions
+│   ├── architecture docs/
+│   │   └── phase-1-architecture.md
+│   ├── appFlow.md
+│   └── phases.md
+├── AGENTS.md                     # Instructions and rules for AI coding agents
+└── coding-standards.md           # Coding conventions
 ```
 
-The project is separated into frontend, backend, database/Prisma, and documentation areas.
+The project is separated into client, server, database/Prisma, and documentation areas.
 
 ---
 
@@ -84,8 +87,9 @@ The frontend must not communicate directly with PostgreSQL.
 
 **Responsibilities:**
 
-* User registration
-* User login
+* Email magic-link authentication
+* Google OAuth authentication
+* GitHub OAuth authentication
 * User logout
 * Display user's prompts
 * Create prompts
@@ -113,7 +117,7 @@ The frontend communicates with the backend through HTTP APIs.
 
 **Responsibilities:**
 
-* Authentication
+* Authentication (email magic link, Google OAuth, GitHub OAuth)
 * Authorization
 * User management
 * Prompt CRUD operations
@@ -143,8 +147,14 @@ Stores persistent application data.
 
 * User
 * Prompt
+* Category
+* Tag
 
 A user owns their prompts.
+
+A prompt can have multiple categories and multiple tags.
+
+Categories and tags are separate organizational systems.
 
 A user must only be able to access and modify their own prompts.
 
@@ -168,7 +178,7 @@ Prisma is not a separate data store.
 
 # 5. External Integrations
 
-Phase 1 does not require external APIs or third-party application integrations.
+Phase 1 requires external authentication providers for Google and GitHub OAuth and an email delivery mechanism for magic-link authentication. Provider credentials and email-service credentials must remain server-side.
 
 AI functionality is not part of Phase 1.
 
@@ -201,7 +211,11 @@ Deployment-specific infrastructure is outside the Phase 1 architecture unless ex
 
 ## 7.1 Authentication
 
-Users must create an account and authenticate before accessing protected functionality.
+Users authenticate using email magic links, Google OAuth, or GitHub OAuth.
+
+First-time account creation occurs only after successful authentication.
+
+All supported methods establish the same application session.
 
 The backend is responsible for verifying authentication.
 
@@ -217,11 +231,13 @@ The backend must not trust authorization decisions made only by the frontend.
 
 ---
 
-## 7.3 Password Security
+## 7.3 Authentication Token and Session Security
 
-User passwords must never be stored as plain text.
+Magic-link tokens must expire and be single-use.
 
-Passwords must be securely hashed before being stored in PostgreSQL.
+OAuth provider responses must be verified before a session is established.
+
+Authentication tokens and session credentials must be protected and must not be exposed unnecessarily.
 
 ---
 
@@ -284,15 +300,17 @@ Do not document tools that are not being used.
 The Phase 1 architecture supports the requirements defined in:
 
 ```text
-docs/prd/phase-1-mvp.md
+docs/prd docs/phase-1-mvp.md
 ```
 
 Phase 1 includes:
 
-* Account creation
-* Login
+* Email magic-link authentication
+* Google OAuth authentication
+* GitHub OAuth authentication
+* First-time account creation after successful authentication
+* Authentication persistence
 * Logout
-* Authentication
 * Authorization
 * Manual prompt creation
 * Prompt viewing
@@ -369,13 +387,13 @@ For example:
 
 ```text
 docs/
-├── prd/
+├── prd docs/
 │   ├── phase-1-mvp.md
 │   └── phase-2-ai.md
 │
-└── architecture/
-    ├── phase-1-mvp.md
-    └── phase-2-ai.md
+└── architecture docs/
+    ├── phase-1-architecture.md
+    └── phase-2-ai-architecture.md
 ```
 
 Phase 2 may introduce technologies such as AI services, Redis, Nginx, or other infrastructure if they are required by the Phase 2 requirements.

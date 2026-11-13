@@ -2,7 +2,7 @@
 
 **Document purpose:** Describe how users move through Prompt Vault and complete user-facing journeys.
 
-**Authority:** This document visualizes user journeys. `prd.md` remains the central product source of truth, `phase-1-mvp.md` defines the current Phase 1 scope, and `architecture.md` defines the technical design. This file must not override those documents.
+**Authority:** This document visualizes user journeys. `docs/prompt-vault-prd.md` remains the central product source of truth, `docs/prd docs/phase-1-mvp.md` defines the current Phase 1 scope, and `docs/architecture docs/phase-1-architecture.md` defines the technical design. This file must not override those documents.
 
 **Status:** Draft — user journeys are defined at a product level; exact route names and visual layouts remain implementation decisions.
 
@@ -58,60 +58,36 @@ Exact labels, route paths, menus, and page layout are UI decisions. This flow do
 
 ## 3. Authentication Flows — Phase 1
 
-Prompt Vault is intended to support these sign-in methods:
+Prompt Vault supports these sign-in methods in Phase 1:
 
-1. Traditional email/password registration and login.
-2. Email magic-link sign-in.
-3. Google sign-in and other configured identity providers.
+1. Email magic-link sign-in.
+2. Google OAuth sign-in.
+3. GitHub OAuth sign-in.
 
-All methods should establish the same authenticated application state and grant the same account permissions. Logout and protected-resource rules apply regardless of sign-in method.
+Traditional email/password registration and login are not part of Phase 1. All supported methods establish the same authenticated application state and grant the same account permissions. Logout and protected-resource rules apply regardless of sign-in method.
 
-### 3.1 Traditional email/password registration
-
-```text
-Guest opens Sign In / Create Account
-        ↓
-Chooses email/password registration
-        ↓
-Enters required registration details
-        ↓
-Client validates fields
-        ↓
-Server validates details and creates account
-        ↓
-Success: establish or continue the documented sign-in flow
-        ↓
-Shared Home Page — authenticated state
-```
-
-If validation or account creation fails, show a clear error and allow the user to correct the information. Do not show success unless account creation succeeds.
-
-**Open detail:** Whether successful registration automatically signs the user in or asks them to log in must be confirmed in the product requirements before implementation.
-
-### 3.2 Traditional email/password login
+### 3.1 Account creation through authentication
 
 ```text
 Guest opens Sign In
         ↓
-Chooses email/password
+Chooses a supported sign-in method
         ↓
-Enters email and password
+Completes email magic-link verification or provider authentication
         ↓
-Server verifies credentials
+Backend verifies the result
         ↓
-Valid credentials?
-   ├── No → Show an appropriate error; allow retry
-   └── Yes → Establish authenticated session
-                    ↓
-             Return to safe intended destination
-             or shared home page
+First successful authentication creates the account if one does not exist
+        ↓
+Establish authenticated session
+        ↓
+Return to safe intended destination
+or shared home page
 ```
 
-If a session cannot be established, keep the user unauthenticated. Do not reveal private prompt data.
+Account creation occurs only after successful authentication. A failed or cancelled authentication attempt must not create an authenticated session.
 
-**Open detail:** Password reset/recovery has not yet been confirmed as Phase 1 scope. Do not silently add it; decide whether it is required before implementation.
-
-### 3.3 Email magic-link sign-in
+### 3.2 Email magic-link sign-in
 
 ```text
 Guest opens Sign In
@@ -141,18 +117,21 @@ Requirements:
 - Invalid, expired, or already-used links must be handled clearly.
 - Repeated requests must have appropriate abuse protection.
 - Do not expose authentication tokens unnecessarily.
+- A guest or existing user may request a link using a valid email address.
+- The backend validates the token and establishes the authenticated session.
+- First-time account creation happens only after successful link verification.
 - If a future flow requires preserving temporary user work during sign-in, the sign-in flow must not intentionally discard it.
 
-### 3.4 Google and other identity-provider sign-in
+### 3.3 Google OAuth sign-in
 
 ```text
 Guest opens Sign In
         ↓
-Chooses Google or another configured provider
+Chooses Google
         ↓
-Application starts provider authentication
+Application starts Google authentication
         ↓
-User completes the provider's authentication/consent steps
+User completes Google's authentication/consent steps
         ↓
 Application validates the provider result
         ↓
@@ -166,11 +145,42 @@ Authentication successful?
 ```
 
 Requirements:
-- Only providers that have been configured and approved are shown.
-- Provider credentials/secrets remain server-side where applicable.
-- Account creation, existing-account matching, and linking identities must follow explicit rules.
+- Google sign-in must be available.
+- Provider authentication responses must be verified before a session is established.
+- First-time account creation can occur after successful authentication.
+- Failed or cancelled authentication must not grant access.
+- Provider credentials and secrets must remain server-side.
 
-**Open detail:** Account-linking behavior (for example, what happens when a provider returns an email already associated with an existing account) must be decided before implementing multiple providers. Do not automatically merge accounts without a safe, explicit rule.
+### 3.4 GitHub OAuth sign-in
+
+```text
+Guest opens Sign In
+        ↓
+Chooses GitHub
+        ↓
+Application starts GitHub authentication
+        ↓
+User completes GitHub's authentication/consent steps
+        ↓
+Application validates the provider result
+        ↓
+Authentication successful?
+   ├── No → Show an appropriate error/retry state
+   └── Yes → Resolve the account according to approved
+              account-linking rules and establish session
+                    ↓
+             Return to safe intended destination
+             or shared home page
+```
+
+Requirements:
+- GitHub sign-in must be available.
+- Provider authentication responses must be verified before a session is established.
+- First-time account creation can occur after successful authentication.
+- Failed or cancelled authentication must not grant access.
+- Provider credentials and secrets must remain server-side.
+
+**Open detail:** Account-linking behavior (for example, what happens when a provider returns an email already associated with an existing account) must be decided before implementation. Do not automatically merge accounts without a safe, explicit rule.
 
 ### 3.5 Session persistence and logout
 
@@ -215,7 +225,7 @@ Enters title and prompt content
         ↓
 Optionally enters description
         ↓
-Assigns category and adds tags
+Assigns one or more categories and optionally adds multiple tags
         ↓
 Submits form
         ↓
@@ -228,7 +238,7 @@ Save successful?
 
 A saved prompt is private by default. The user must not be able to assign it to another account by manipulating request data.
 
-**Open detail:** The central PRD marks whether category is mandatory as TBD. The form must follow the final decision recorded in the product requirements.
+A prompt must have one or more categories. Tags are optional, and a prompt can have multiple tags.
 
 ### 4.2 View the prompt collection
 
@@ -422,13 +432,10 @@ Guest access, attribution, publication lifecycle, media behavior, reporting, and
 
 Keep unresolved decisions visible rather than guessing:
 
-1. Does successful email/password registration automatically sign the user in?
-2. Is password reset/recovery included in Phase 1?
-3. How are accounts linked when the same email is used with different authentication methods/providers?
-4. Which external identity providers are included at initial launch, beyond Google?
-5. Is category required or optional?
-6. Do multiple selected tags use AND or OR filtering?
-7. What are the final route names and exact screen layouts?
-8. What are the chosen session lifetime and persistence details?
+1. How are accounts linked when the same email is used with different authentication methods/providers?
+2. Are any additional identity providers beyond Google and GitHub approved for later phases?
+3. Do multiple selected tags use AND or OR filtering?
+4. What are the final route names and exact screen layouts?
+5. What are the chosen session lifetime and persistence details?
 
-Authentication requirements in the central `prd.md` must be updated to match the final decision to support email/password, magic links, and Google/other providers. Until that is reconciled, this flow document records the latest requested direction but does not silently override the central PRD.
+The central PRD (`docs/prompt-vault-prd.md`) is authoritative. This flow document is aligned with the approved Phase 1 authentication methods: email magic link, Google OAuth, and GitHub OAuth. Traditional email/password authentication is not part of Phase 1.

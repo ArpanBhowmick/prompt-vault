@@ -23,9 +23,9 @@ This document should not duplicate either of those documents.
 
 **Goal:** Build the first usable version of Prompt Vault that allows authenticated users to securely create, manage, search, filter, and reuse their own prompts.
 
-**PRD:** `docs/prd/phase-1-mvp.md`
+**PRD:** `docs/prd docs/phase-1-mvp.md`
 
-**Architecture:** `docs/architecture/phase-1-mvp.md`
+**Architecture:** `docs/architecture docs/phase-1-architecture.md`
 
 ---
 
@@ -54,27 +54,37 @@ This document should not duplicate either of those documents.
 
 
 
-### Registration
+### Email Magic Link
 
-- [ ] Create registration UI
-- [ ] Create registration API
-- [ ] Validate registration input
-- [ ] Check email uniqueness
-- [ ] Securely hash passwords
-- [ ] Store user account
-- [ ] Handle registration errors
-- [ ] Handle successful registration
+- [ ] Create email entry / magic-link request UI
+- [ ] Create magic-link request API
+- [ ] Validate email input
+- [ ] Send single-use, expiring magic link
+- [ ] Create magic-link verification API
+- [ ] Validate token expiry and single-use status
+- [ ] Create account after first successful verification
+- [ ] Handle invalid, expired, and already-used links
+- [ ] Handle magic-link request and verification errors
 
 
 
-### Login
+### Google OAuth
 
-- [ ] Create login UI
-- [ ] Create login API
-- [ ] Validate login credentials
-- [ ] Create authentication mechanism
-- [ ] Handle invalid credentials
-- [ ] Handle successful login
+- [ ] Add Google sign-in option
+- [ ] Create/configure Google OAuth flow
+- [ ] Verify Google authentication response
+- [ ] Create account on first successful authentication
+- [ ] Handle failed or cancelled Google authentication
+
+
+
+### GitHub OAuth
+
+- [ ] Add GitHub sign-in option
+- [ ] Create/configure GitHub OAuth flow
+- [ ] Verify GitHub authentication response
+- [ ] Create account on first successful authentication
+- [ ] Handle failed or cancelled GitHub authentication
 
 
 
@@ -112,8 +122,12 @@ This document should not duplicate either of those documents.
 - [ ] Add title field
 - [ ] Add description field
 - [ ] Add prompt content field
-- [ ] Add category selection
-- [ ] Add tag input
+- [ ] Add category selection (one or more categories)
+- [ ] Add tag input (zero or more tags)
+- [ ] Support predefined categories
+- [ ] Support custom categories
+- [ ] Support predefined tags
+- [ ] Support custom tags
 - [ ] Validate required fields
 - [ ] Create prompt API
 - [ ] Store prompt in PostgreSQL
@@ -164,8 +178,8 @@ This document should not duplicate either of those documents.
 - [ ] Allow title editing
 - [ ] Allow description editing
 - [ ] Allow content editing
-- [ ] Allow category changes
-- [ ] Allow tag changes
+- [ ] Allow adding or removing multiple category assignments
+- [ ] Allow adding or removing multiple tag assignments
 - [ ] Validate updated information
 - [ ] Create update API
 - [ ] Update prompt in database
@@ -217,6 +231,7 @@ This document should not duplicate either of those documents.
 
 - [ ] Add category filter
 - [ ] Support predefined categories
+- [ ] Support custom categories
 - [ ] Filter prompts by category
 - [ ] Allow clearing category filter
 
@@ -226,8 +241,10 @@ This document should not duplicate either of those documents.
 
 - [ ] Add tag filtering
 - [ ] Support filtering by tag
+- [ ] Support predefined tags
+- [ ] Support custom tags
 - [ ] Support multiple selected tags
-- [ ] Use AND behavior for multiple selected tags
+- [ ] Decide and document AND/OR behavior for multiple selected tags before implementing tag filtering
 - [ ] Allow clearing tag filters
 
 
@@ -276,8 +293,11 @@ Before marking Phase 1 as complete:
 
 ## Authentication
 
-- [ ] Registration works
-- [ ] Login works
+- [ ] Email magic-link authentication works
+- [ ] Google OAuth authentication works
+- [ ] GitHub OAuth authentication works
+- [ ] Email magic-link, Google OAuth, and GitHub OAuth authentication all establish the same Prompt Vault application session
+- [ ] First-time account creation occurs only after successful authentication
 - [ ] Authentication persistence works
 - [ ] Protected areas are protected
 - [ ] Logout works
@@ -302,7 +322,7 @@ Before marking Phase 1 as complete:
 - [ ] Search works
 - [ ] Category filtering works
 - [ ] Tag filtering works
-- [ ] Multiple tag filtering uses AND behavior
+- [ ] Multiple-tag behavior matches the documented AND/OR decision
 - [ ] Search and filters work together
 - [ ] Filters can be cleared
 
@@ -345,4 +365,4 @@ Phase 1 is complete when:
 - [ ] Required user-experience states are implemented
 - [ ] The application can be used successfully as the Prompt Vault MVP
 
-**Phase 1 Status:** Not Started
+**Phase 1 Status:** In Progress

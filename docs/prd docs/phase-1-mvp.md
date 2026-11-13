@@ -649,7 +649,7 @@ The Phase 1 MVP must satisfy the following functional requirements.
 - [ ] A valid, unexpired, single-use magic link authenticates the user; first-time account creation through this method occurs only after successful verification.
 - [ ] Invalid, expired, or already-used links are rejected with clear recovery guidance.
 - [ ] Magic-link requests are rate-limited and tokens are handled securely.
-- [ ] A user can sign in with Google, and the authentication design supports other configured providers.
+- [ ] A user can sign in with Google OAuth or GitHub OAuth, and both methods use the same application session.
 - [ ] Failed or cancelled provider authentication does not grant access.
 - [ ] A user can remain authenticated while their session is valid, including across normal page refreshes, regardless of supported sign-in method.
 - [ ] Guests can access the shared home page but cannot access private prompt-management functionality.
@@ -760,7 +760,7 @@ Phase 1 can be considered functionally complete when all of the following are tr
 - [ ] A valid, unexpired, unused link authenticates the user.
 - [ ] First-time account creation through magic-link authentication happens only after successful link verification.
 - [ ] Invalid, expired, and previously used links do not authenticate the user and provide a recovery path.
-- [ ] A user can sign in using Google, and other configured providers can be supported.
+- [ ] A user can sign in using Google OAuth or GitHub OAuth, and both methods use the same application session.
 - [ ] Failed or cancelled provider sign-in does not grant access.
 - [ ] The user remains authenticated across normal page refreshes while the session is valid, regardless of sign-in method.
 - [ ] The user can log out and the application session is terminated regardless of sign-in method.

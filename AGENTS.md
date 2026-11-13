@@ -4,14 +4,16 @@
 
 Prompt Vault is a full-stack web application for securely storing and managing a user's AI prompts.
 
-The current product scope is defined by `PRD.md`.
+The current product scope is defined by `docs/prompt-vault-prd.md`.
 
 The current project is an MVP. Do not implement future features unless the user explicitly requests them.
 
 ### Current MVP capabilities
 
-- User registration
-- User login
+- Email magic-link authentication
+- Google OAuth authentication
+- GitHub OAuth authentication
+- Shared application session across authentication methods
 - User logout
 - Authentication and protected routes
 - Create prompts manually
@@ -68,10 +70,12 @@ Do not add a framework, library, ORM, database, service, or infrastructure tool 
 Use this priority order:
 
 1. Direct user instructions in the current task
-2. `PRD.md`
-3. `docs/architecture.md`, when present
-4. Existing code and established project conventions
-5. Other documentation
+2. `docs/prompt-vault-prd.md` — central product requirements
+3. `docs/prd docs/phase-1-mvp.md` — current Phase 1 requirements
+4. `docs/architecture docs/phase-1-architecture.md` — current technical architecture
+5. `coding-standards.md` — coding conventions
+6. Existing code and established project conventions
+7. Other documentation
 
 If the user explicitly requests something that differs from the PRD, follow the user's current instruction and update relevant documentation when appropriate.
 
@@ -81,17 +85,27 @@ Do not silently change product requirements.
 
 ## 4. Before Making Changes
 
-Before modifying code:
+Before modifying anything:
 
-1. Read the relevant section of `PRD.md`.
-2. Inspect the existing implementation related to the task.
-3. Understand how the existing code works before changing it.
-4. Identify the smallest set of changes required.
-5. Check whether the task affects other parts of the system.
+1. Check the current Git status and identify existing uncommitted changes.
+2. Read the relevant sections of the PRD and architecture documentation.
+3. Inspect the existing implementation related to the requested task.
+4. Understand how the existing code works and which other parts depend on it.
+5. Identify the specific files and folders that need to be modified.
+6. Determine the smallest set of changes required.
+7. Check whether the task can be completed without affecting other parts of the project.
 
-Do not assume a missing feature means the surrounding architecture should be redesigned.
+### Protect Existing Work
 
-Do not rewrite existing code simply because a different approach may be cleaner.
+- Never overwrite, discard, reset, or revert the user's existing changes.
+- Do not assume uncommitted changes are unimportant or unwanted.
+- Do not replace working implementations without a clear reason.
+- Do not modify files simply because they could be improved.
+- Do not perform changes outside the requested scope without approval.
+
+Reading files outside the requested scope is allowed when necessary to understand dependencies. However, reading or inspecting a file does not authorize modifying it.
+
+If implementation requires changes outside the requested scope, stop and explain why before proceeding.
 
 ---
 
@@ -115,54 +129,102 @@ Prefer the smallest correct change that satisfies the requirement.
 
 Avoid rewriting or restructuring large portions of the application to implement a small feature.
 
+
+### 5.4 Respect the Task's Scope
+
+Every task has a defined scope. Stay within that scope.
+
+Examples:
+
+- If the user requests a frontend change, work within the existing frontend directory.
+- If the user requests a backend change, work within the existing backend directory.
+- If the user identifies a specific feature or folder, limit modifications to that feature or folder.
+- If the user requests a database change, do not unnecessarily modify frontend or backend functionality unrelated to that change.
+
+The agent may inspect other parts of the repository to understand dependencies, but must not modify them without authorization.
+
+If the requested task genuinely requires modifications outside its original scope:
+
+1. Explain why the additional changes are necessary.
+2. Identify the affected files and folders.
+3. Explain the impact on existing functionality.
+4. Wait for the user's approval before modifying anything outside the original scope.
+
+Do not expand the scope of a task independently.
+
+Do not use a focused feature request as an opportunity to refactor, reorganize, clean up, or improve the rest of the project.
+
 ---
 
 ## 6. Required Approval Before Consequential Changes
 
-The agent may make normal implementation changes without asking for approval.
+The agent may modify existing code within the explicitly requested scope when implementing the requested task.
 
-However, **stop and ask the user before making a consequential change that was not explicitly requested.**
+However, the agent must stop and obtain user approval before performing the following actions unless the user has explicitly authorized them.
 
-Examples include:
+### 6.1 Files and Folders
 
-### Database
-- Adding/removing a model
-- Adding/removing/changing a field
-- Changing relationships
-- Changing enums or constraints
-- Adding/removing indexes
-- Creating or modifying migrations
+- Creating new files.
+- Creating new folders.
+- Deleting existing files or folders.
+- Renaming or moving existing files or folders.
+- Replacing an existing implementation with a substantially different one.
+- Restructuring the repository.
 
-### API
-- Adding an endpoint not required by the task
-- Removing an endpoint
-- Changing an existing request/response contract
-- Changing authentication or authorization behavior
+### 6.2 Scope Expansion
 
-### Dependencies
-- Adding, removing, or replacing packages
-- Changing a major framework/dependency
+- Modifying files outside the requested folder or feature.
+- Modifying unrelated frontend components.
+- Modifying unrelated backend routes, controllers, services, or middleware.
+- Changing existing functionality outside the requested task.
+- Making changes to shared code that affect other features.
 
-### Architecture
-- Changing established architecture
-- Introducing a new architectural pattern
-- Introducing Redis, queues, microservices, or external services
+### 6.3 Database
 
-### Infrastructure
-- Changing deployment, Docker, CI/CD, or environment requirements
+- Adding or removing models.
+- Adding, removing, or changing fields.
+- Changing relationships.
+- Changing enums or constraints.
+- Adding or removing indexes.
+- Creating or modifying migrations.
+- Performing destructive database operations.
 
-### Existing behavior
-- Changing behavior outside the requested feature
-- Removing existing functionality
+### 6.4 API and Backend Contracts
+
+- Adding or removing endpoints beyond the requested scope.
+- Changing existing request or response structures.
+- Changing established API behavior.
+- Changing authentication or authorization behavior.
+
+### 6.5 Dependencies and Configuration
+
+- Installing, removing, or replacing packages.
+- Changing major framework or dependency versions.
+- Modifying project configuration.
+- Introducing new services or infrastructure.
+- Changing deployment, Docker, or CI/CD configuration.
+- Introducing external APIs or providers.
+
+### 6.6 Existing Functionality and Security
+
+- Removing existing functionality.
+- Replacing a working implementation.
+- Changing established application behavior.
+- Making security-sensitive architectural decisions.
+
+### Approval Process
 
 When approval is required, explain:
 
-1. What change is needed
-2. Why it is needed
-3. Which files/components will be affected
-4. What alternatives exist, if relevant
+1. What change is proposed.
+2. Why it is necessary.
+3. Which files, folders, or components will be affected.
+4. Whether existing functionality will be affected.
+5. What alternatives are available, if relevant.
 
-Then wait for the user's decision.
+Do not make the proposed changes until the user approves them.
+
+Do not ask for approval again for changes the user has already explicitly authorized.
 
 ---
 
@@ -207,7 +269,7 @@ When modifying authentication:
 - Inspect the existing flow first.
 - Preserve working behavior unless the task requires changing it.
 - Do not weaken authentication or authorization.
-- Never expose passwords or password hashes.
+- Never expose authentication tokens, session credentials, or other authentication secrets.
 - Do not expose refresh tokens unnecessarily.
 - Preserve secure cookie behavior.
 - Enforce authorization on the backend.
@@ -378,15 +440,38 @@ When a new environment variable is required:
 
 ## 17. File and Folder Rules
 
-Before creating a new file:
+Preserve the existing repository structure.
 
-- Check whether an existing file already has the responsibility.
-- Follow the current folder structure.
-- Follow existing naming conventions.
+Before creating a file:
 
-Do not create duplicate files merely because another location seems convenient.
+- Check whether an existing file already handles the responsibility.
+- Check whether the new file is genuinely necessary.
+- Follow the existing folder structure and naming conventions.
+- Explain the proposed file path and its purpose.
+- Obtain user approval before creating it, unless explicitly requested.
 
-Do not reorganize the repository unless explicitly requested or genuinely required.
+Before creating a folder:
+
+- Check whether an existing folder can accommodate the implementation.
+- Avoid creating additional directory layers unnecessarily.
+- Explain why the new folder is necessary.
+- Obtain user approval before creating it, unless explicitly requested.
+
+Before deleting, renaming, moving, or replacing existing files or folders:
+
+- Inspect their contents and dependencies.
+- Explain why the operation is necessary.
+- Identify the affected paths.
+- Obtain user approval before proceeding, unless explicitly requested.
+
+Never:
+
+- Create duplicate files unnecessarily.
+- Move files simply to make the structure look cleaner.
+- Delete existing code because it appears unused without investigating its usage.
+- Replace existing implementations without understanding their dependencies.
+- Reorganize the repository for personal preference.
+- Delete or overwrite the user's existing work.
 
 ---
 
@@ -396,9 +481,12 @@ When implementation changes the current architecture or important project behavi
 
 Current documentation responsibilities:
 
-- `PRD.md` — product requirements
-- `docs/architecture.md` — current technical architecture
-- `docs/roadmap.md` — future/planned work
+- `docs/prompt-vault-prd.md` — product requirements
+- `docs/prd docs/phase-1-mvp.md` — current Phase 1 MVP requirements
+- `docs/architecture docs/phase-1-architecture.md` — current technical architecture
+- `docs/phases.md` — implementation phase tracking
+- `docs/appFlow.md` — user journey flows
+- `coding-standards.md` — coding conventions
 - `AGENTS.md` — rules for coding agents
 
 Do not create `phase-2`, `v2`, or duplicate architecture documents just because the architecture changes.
@@ -447,21 +535,47 @@ Do not blindly accept generated code.
 
 ---
 
-## 21. Change Isolation
+## 21. Change Isolation and Existing Code Preservation
 
-For every task, keep the change isolated.
+Every task must be implemented without unnecessarily affecting existing project functionality.
 
-Before finishing, inspect the diff and verify:
+### Before Implementation
 
-- No unrelated files were changed.
-- No unrelated functionality was modified.
-- No accidental debugging code remains.
-- No temporary/mock code was introduced unintentionally.
-- No secrets were added.
-- No unexpected dependency was added.
-- No unexpected database change was made.
+- Check Git status.
+- Identify existing modified and untracked files.
+- Preserve all changes that existed before the task.
+- Identify the files expected to change for the requested task.
 
-If unrelated changes are discovered, revert them unless they are required and disclosed.
+### During Implementation
+
+- Modify only files within the authorized scope.
+- Avoid unrelated formatting changes.
+- Do not rewrite entire files when smaller targeted modifications are sufficient.
+- Do not remove existing functionality unless explicitly authorized.
+- Do not introduce temporary or mock implementations unnecessarily.
+- Do not overwrite user-created code or existing uncommitted changes.
+
+### After Implementation
+
+Inspect the Git diff and verify:
+
+- Only the expected files were modified.
+- No unrelated functionality was changed.
+- No existing user changes were overwritten.
+- No unnecessary code was deleted.
+- No unexpected dependencies were introduced.
+- No unexpected database, API, or configuration changes were made.
+- No accidental debugging or temporary code remains.
+
+If the agent introduces unrelated modifications, identify them and explain how they will be restored.
+
+Never automatically discard or revert changes whose origin is unclear.
+
+Never use destructive Git operations such as `git reset --hard`, `git clean -fd`, or broad restore operations to clean up changes.
+
+If the agent cannot confidently distinguish its own changes from pre-existing user changes, stop and ask the user.
+
+Preserving existing work takes priority over automatically cleaning up the repository.
 
 ---
 

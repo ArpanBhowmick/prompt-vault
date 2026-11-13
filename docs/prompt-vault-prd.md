@@ -65,13 +65,13 @@ This document governs:
 
 ### 1.3 What this document does not replace
 
-Implementation details such as database table design, Prisma models, API route names, server module boundaries, indexes, email provider selection, session storage mechanism, and deployment configuration may be documented in `architecture.md`. Those technical choices must satisfy this PRD and must not alter product behavior without an explicit product decision.
+Implementation details such as database table design, Prisma models, API route names, server module boundaries, indexes, email provider selection, session storage mechanism, and deployment configuration may be documented in `docs/architecture docs/phase-1-architecture.md`. Those technical choices must satisfy this PRD and must not alter product behavior without an explicit product decision.
 
 ### 1.4 Conflict resolution
 
 1. This central PRD is the source of truth for product behavior.
 2. Phase PRDs, if used, are implementation slices derived from this document. They may add detailed acceptance tests for their scope but may not contradict this document.
-3. `architecture.md` records technical design and must remain consistent with this PRD.
+3. `docs/architecture docs/phase-1-architecture.md` records technical design and must remain consistent with this PRD.
 4. `phases.md` tracks work, progress, blockers, and completion; it does not create new product requirements.
 5. `AGENTS.md` defines coding-agent working rules; it does not redefine product behavior.
 6. `appFlow.md` may visualize the journeys in this PRD but must not introduce conflicting journeys.
@@ -431,8 +431,8 @@ This section defines product-level concepts. It is not a final Prisma schema or 
 | Title | Identifies the prompt; required for a saved prompt | Decided |
 | Content | Actual prompt text; required for a saved prompt | Decided |
 | Description | Optional explanation of the prompt's purpose | Decided as optional |
-| Category | Organizes the prompt | Category list proposed; required/optional status TBD |
-| Tags | Zero or more user-defined labels for organization/filtering | Decided |
+| Category | Organizes the prompt | Required; one or more predefined or custom categories |
+| Tags | Zero or more predefined or user-created labels for organization/filtering | Decided |
 | Origin | System-managed marker distinguishing manually created prompts from Prompt Vault AI-generated prompts | Decided concept; detailed lifecycle TBD |
 | Created timestamp | Recorded automatically when the prompt is saved | Decided |
 | Updated timestamp | Updated automatically when a saved prompt changes | Decided |
@@ -1196,7 +1196,7 @@ Traditional email/password authentication is not included.
 - Search fields: title, description, prompt content, tags.
 - Filters: category and tags.
 - Copy action copies prompt content only by default.
-- Proposed default categories: Development, Education, Writing, Research, Productivity, Image Generation, Other.
+- Default categories: Development, Education, Writing, Research, Productivity, Image Generation, Other.
 - Favorites are not part of the initial MVP requirement.
 - Community cards are intended to include image or video previews, but media implementation is undecided.
 - Proposed phase order: Phase 1 private prompt management/auth; Phase 2 AI generation and guest continuity; Phase 3 community.
