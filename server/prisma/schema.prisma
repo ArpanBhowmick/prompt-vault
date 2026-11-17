@@ -12,100 +12,79 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id            String  @id @default(cuid())
+  name          String
+  email         String  @unique
+  passwordHash  String?
+  firebaseUid   String? @unique
+  emailVerified Boolean @default(false)
 
+  prompts    Prompt[]
+  tags       Tag[]
+  categories Category[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
+model Prompt {
+  id     String @id @default(cuid())
+  userId String
 
-// model User {
-//   id            String   @id @default(cuid())
-//   name          String
-//   email         String   @unique
-//   passwordHash  String?
-//   firebaseUid   String?  @unique
-//   emailVerified Boolean  @default(false)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-//   prompts       Prompt[]
-//   tags          Tag[]
-//   categories    Category[]
+  title       String
+  description String?
+  content     String  @db.Text
 
-//   createdAt     DateTime @default(now())
-//   updatedAt     DateTime @updatedAt
-// }
+  promptTags       PromptTag[]
+  promptCategories PromptCategory[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-// model Prompt {
-//   id          String   @id @default(cuid())
-//   userId      String
+  promptTags PromptTag[]
+}
 
-//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model PromptTag {
+  promptId String
+  tagId    String
 
-//   title       String
-//   description String?
-//   content     String   @db.Text
+  prompt Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
-//   promptTags      PromptTag[]
-//   promptCategories PromptCategory[]
+  @@id([promptId, tagId])
+}
 
-//   createdAt   DateTime @default(now())
-//   updatedAt   DateTime @updatedAt
-// }
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  promptCategories PromptCategory[]
+}
 
+model PromptCategory {
+  promptId   String
+  categoryId String
 
-// model Tag {
-//   id         String   @id @default(cuid())
-//   name       String
-//   userId     String?
-//   createdAt  DateTime @default(now())
-//   updatedAt  DateTime @updatedAt
+  prompt   Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-//   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-//   promptTags PromptTag[]
-// }
-
-
-
-// model PromptTag {
-//   promptId String
-//   tagId    String
-
-//   prompt   Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
-//   tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-//   @@id([promptId, tagId])
-// }
-
-
-
-// model Category {
-//   id         String   @id @default(cuid())
-//   name       String
-//   userId     String?
-//   createdAt  DateTime @default(now())
-//   updatedAt  DateTime @updatedAt
-
-//   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-//   promptCategories PromptCategory[]
-// }
-
-
-
-// model PromptCategory {
-//   promptId   String
-//   categoryId String
-
-//   prompt     Prompt   @relation(fields: [promptId], references: [id], onDelete: Cascade)
-//   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-//   @@id([promptId, categoryId])
-// }
-
-
-
-
-
+  @@id([promptId, categoryId])
+}
